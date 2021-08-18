@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:help_chem/src/operations/stoichiometry/molecular_mass.dart';
+import 'package:help_chem/src/operations/stoichiometry/operations_stoichiometry.dart';
 import 'package:help_chem/src/providers/elements_providers.dart';
 
 import 'package:help_chem/src/utils/hex_color_util.dart';
@@ -15,6 +16,7 @@ class _MolarityState extends State<MolarityPage> {
   double _masa=0;
   double _molaridad=0;
   double _pm=0;
+  double _resultado=0;
   List<dynamic> _data=[];
 
   final ButtonStyle styleCalcular = ElevatedButton.styleFrom(
@@ -148,13 +150,57 @@ class _MolarityState extends State<MolarityPage> {
 
       style: styleCalcular,
       onPressed: () {
-        _pm = getMolecularMass(data, _formula);
-        print(_pm);
+        print(getMolecularMass(data, _formula));
+        _pm=getMolecularMass(data, _formula);
+        if(_molaridad==0){
+          _resultado=getMolarity(_volumen, _masa,_pm);
+        }
+        else if(_volumen==0){
+          _resultado=getVolume(_molaridad, _masa, _pm);
+        }
+        else if(_masa==0){
+          _resultado=getMass(_molaridad,_pm,_volumen);
+        }
+        _mostrarResultado(context);
       },
       child: Text(
         'Calcular',
         
       ),
     );
+  }
+
+  void _mostrarResultado(BuildContext context){
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, //Para poder quitar la alerta al presionar fuera de la alerta
+      builder : (context) {
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20.0)),
+          title: Text('Resultado'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('$_resultado'),
+              FlutterLogo( size: 100.0 )
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+
+      }
+    );
+
   }
 }

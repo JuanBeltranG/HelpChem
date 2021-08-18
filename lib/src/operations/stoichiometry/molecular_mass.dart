@@ -1,54 +1,55 @@
 
 double getMolecularMass(List<dynamic> data, String formula){
-  double molecular_mass=0.0;
-  RegExp regEx = new RegExp(r"(?=.*[a-z])(?=.*[A-Z])\w+");
-  String construct, construct_num;
-  double parse_1;
-  int parse_2;
-  for(int i=0; i<formula?.length; i++){
-    if((int.tryParse(formula[i])==null) && construct.length == 0){
-      construct  += formula[i];
-    }
-    else if(((int.tryParse(formula[i])==null) && construct.length != 0)&&(regEx.hasMatch(formula[i]))){
+  double molecularMass=0.0;
+  RegExp regEx = new RegExp(r"(?=.*[A-Z])\w+");
+  String construct="", constructNum="";
+  double parse_1=0;
+  int parse_2=0;
+  for(int i=0; i<formula.length; i++){
+    if(((int.tryParse(formula[i])==null) && construct.length != 0)&&(formula[i].toUpperCase()==formula[i])){
       parse_1 = getInformation(data, construct);
       construct="";
-      molecular_mass += parse_1;
+      molecularMass += parse_1;
+    }
+    if(((int.tryParse(formula[i])==null) && construct.length == 0)||((int.tryParse(formula[i])==null)&&formula[i].toLowerCase()==formula[i])){
+      construct  += formula[i];
     }
     else if(int.tryParse(formula[i])!=null){
       for(int j=i; j<formula.length; j++){
-        if(int.tryParse(formula[j])==null){
+        if(int.tryParse(formula[j])!=null){
+          constructNum += formula[j];
+        }else{
           break;
         }
-        construct_num += formula[j];
       }
-      parse_2=int.tryParse(construct_num);
-      construct_num = "";
+      parse_2=int.tryParse(constructNum);
+      constructNum = "";
       parse_1 = getInformation(data, construct);
       construct="";
-      molecular_mass += (parse_1*parse_2);
+      molecularMass += (parse_1*(parse_2));
     }
   }
   if(construct.length != 0){
     parse_1 = getInformation(data, construct);
-    molecular_mass += parse_1;
+    molecularMass += parse_1;
     construct = "";
   }
-  return molecular_mass;
+  return molecularMass;
 }
 
 double getInformation(List<dynamic> data, String construct){
-  String construct_num;
+  String constructNum="";
   double parse_1;
-  int length_num; 
+  int lengthNum; 
   for(Map value in data){
     if(value['symbol']==construct){
-      length_num = value['atomicMass'].length;
-      for(int k=0; k<length_num; k++){
+      lengthNum = value['atomicMass'].length;
+      for(int k=0; k<lengthNum; k++){
         if(value['atomicMass'][k]!="("){
-          construct_num += value['atomicMass'][k];
+          constructNum += value['atomicMass'][k];
         }else{
-          parse_1 = double.tryParse(construct_num);
-          construct_num="";
+          parse_1 = double.tryParse(constructNum);
+          constructNum="";
         }
       }
         break;
